@@ -38,8 +38,10 @@ export const craftLikesManager: CraftLikesManager = {
    */
   handleLikeInteraction: async (
     id: string,
-    newLikeCount: number
-  ): Promise<void> => {
-    await updateCraftLikes(id, 1, newLikeCount - 1);
+    currentLikes: number
+  ): Promise<number> => {
+    const newLikeCount = currentLikes + 1;
+    await updateCraftLikes(id, 1, currentLikes);
+    return newLikeCount;
   },
 };
