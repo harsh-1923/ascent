@@ -43,7 +43,6 @@ const CraftCard = ({
         const likes = await craftLikesManager.getLikes(supabaseId);
         setLikeCount(likes || 0);
       } catch (error) {
-        console.error("Error loading likes:", error);
         setLikeCount(0);
       } finally {
         setIsLoading(false);
@@ -94,7 +93,6 @@ const CraftCard = ({
         // Update local state optimistically
         setLikeCount(newLikeCount);
       } catch (error) {
-        console.error("Error updating likes:", error);
         // Reset animation state on error
         setIsAnimating(false);
         return;
