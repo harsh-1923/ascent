@@ -23,8 +23,8 @@ const CRAFTS: CraftType[] = [
 
 const page = () => {
   return (
-    <main className="w-screen min-h-screen pb-40">
-      <div className="w-full min-h-screen flex flex-col items-start max-w-2xl mx-auto px-4 space-y-25">
+    <main className="w-screen pb-40">
+      <div className="w-full flex flex-col items-start max-w-2xl mx-auto px-4 space-y-25 py-8">
         {CRAFTS.map((craft) => (
           <CraftCard key={craft.playbackId} {...craft} />
         ))}
