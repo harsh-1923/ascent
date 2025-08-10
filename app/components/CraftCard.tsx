@@ -6,6 +6,7 @@ import { useDoubleTap } from "../lib/utils/useDoubleTap";
 import { motion } from "motion/react";
 import { Heart } from "lucide-react";
 import { craftLikesManager } from "../lib/db/craftLikes";
+import { supabase } from "../lib/db/supabase";
 
 const CraftCard = ({
   playbackId,
@@ -24,12 +25,18 @@ const CraftCard = ({
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const isAnimatingRef = useRef(false);
 
   const overlayId = `overlay-${title}-${uniqueId}`;
   const placeholderId = `placeholder-${title}-${uniqueId}`;
   const layoutId = `heart-layout-${title}-${uniqueId}`;
 
-  // Fetch initial like count on component mount
+  useEffect(() => {
+    isAnimatingRef.current = isAnimating;
+  }, [isAnimating]);
+
+  // Fetch initial like count and set up real-time subscription
   useEffect(() => {
     const loadLikes = async () => {
       try {
@@ -44,31 +51,77 @@ const CraftCard = ({
     };
 
     loadLikes();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel(`craft-likes-${supabaseId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "craft_likes",
+          filter: `craft_id=eq.${supabaseId}`,
+        },
+        (payload) => {
+          // Only update if we're not in the middle of an animation
+          if (!isAnimatingRef.current) {
+            const newLikes = (payload.new as any)?.like_count || 0;
+            setLikeCount(newLikes);
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on unmount
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [supabaseId]);
 
-  useDoubleTap(doubleTapAreaRef as React.RefObject<HTMLElement>, (position) => {
-    setShowHeart(false);
-    setShowPlaceholder(false);
+  useDoubleTap(
+    doubleTapAreaRef as React.RefObject<HTMLElement>,
+    async (position) => {
+      // Set animation state to prevent real-time updates
+      setIsAnimating(true);
 
-    setTimeout(() => {
-      setTapPosition(position);
-      setShowHeart(true);
+      // First, update the like count in the database
+      try {
+        const newLikeCount = likeCount + 1;
+        // Pass CURRENT likeCount to the updater so DB becomes current + 1 (not +2)
+        await craftLikesManager.handleLikeInteraction(supabaseId, likeCount);
 
-      // Update like count locally and in database
-      const newLikeCount = likeCount + 1;
-      setLikeCount(newLikeCount);
+        // Update local state optimistically
+        setLikeCount(newLikeCount);
+      } catch (error) {
+        console.error("Error updating likes:", error);
+        // Reset animation state on error
+        setIsAnimating(false);
+        return;
+      }
 
-      // Update in Supabase
-      craftLikesManager
-        .handleLikeInteraction(supabaseId, newLikeCount)
-        .catch(console.error);
+      // Reset heart and placeholder states
+      setShowHeart(false);
+      setShowPlaceholder(false);
 
+      // Start animation after a brief delay
       setTimeout(() => {
-        setShowPlaceholder(true);
-        setShowHeart(false);
-      }, AWAIT_TIME);
-    }, 100);
-  });
+        setTapPosition(position);
+        setShowHeart(true);
+
+        // Show placeholder after animation completes
+        setTimeout(() => {
+          setShowPlaceholder(true);
+          setShowHeart(false);
+
+          // Reset animation state after animation completes
+          setTimeout(() => {
+            setIsAnimating(false);
+          }, 100);
+        }, AWAIT_TIME);
+      }, 100);
+    }
+  );
 
   return (
     <div className="w-full h-full space-y-4">
