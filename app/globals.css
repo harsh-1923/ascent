@@ -250,6 +250,7 @@
 }
 
 body {
+  --secondary-foreground: var(--colors-gray10);
   background: var(--background);
   color: var(--foreground);
 
@@ -260,6 +261,10 @@ body {
 
 .debug {
   outline: 1px solid red;
+}
+
+.debug-green {
+  outline: 1px solid green;
 }
 
 button {
@@ -275,7 +280,7 @@ button:focus-visible,
 a:focus,
 a:focus-visible {
   outline: 1px solid var(--colors-focus) !important;
-  outline-offset: 2px !important;
+  outline-offset: 0px !important;
 }
 
 button:active,
