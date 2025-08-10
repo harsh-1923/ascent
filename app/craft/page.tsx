@@ -2,17 +2,22 @@ import React from "react";
 import CraftVideo from "../components/CraftVideo";
 import CraftCard from "../components/CraftCard";
 
-interface Craft {
+interface CraftType {
   supabaseId: string;
   playbackId: string;
   title: string;
 }
 
-const CRAFTS = [
+const CRAFTS: CraftType[] = [
   {
     supabaseId: "glyph-inspector",
     playbackId: "s2YbON02H0200tIcmWwfWvAgT7D4vQhxDaZQZ3aIfGXxS00",
     title: "Glyph Inspector",
+  },
+  {
+    supabaseId: "focus-accordion",
+    playbackId: "7iGDHA1X8lCUQnbQmV2iJXqHcxBattZAgUqqHVHMyMc",
+    title: "Focus Accordion",
   },
 ];
 

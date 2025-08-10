@@ -47,10 +47,11 @@ export function useDoubleTap<T extends HTMLElement>(
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Prevent zooming on touch move
-      if (e.touches.length === 1) {
-        e.preventDefault();
+      // Only prevent zooming, allow scrolling
+      if (e.touches.length > 1) {
+        e.preventDefault(); // Prevent pinch zoom
       }
+      // Don't prevent single touch movement - this allows scrolling
     };
 
     const handleClick = (e: MouseEvent) => {
@@ -73,8 +74,8 @@ export function useDoubleTap<T extends HTMLElement>(
       }
     };
 
-    // Add CSS properties to prevent zooming
-    element.style.touchAction = "none";
+    // Add CSS properties to prevent zooming but allow scrolling
+    element.style.touchAction = "pan-x pan-y"; // Allow horizontal and vertical scrolling
     element.style.userSelect = "none";
     element.style.webkitUserSelect = "none";
     (element.style as any).webkitTouchCallout = "none";

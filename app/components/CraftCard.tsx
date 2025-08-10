@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useId, useRef, useState } from "react";
+import React, { useId, useRef, useState, useEffect } from "react";
 import CraftVideo from "./CraftVideo";
 import { useDoubleTap } from "../lib/utils/useDoubleTap";
 import { motion } from "motion/react";
 import { Heart } from "lucide-react";
+import { craftLikesManager } from "../lib/db/craftLikes";
 
 const CraftCard = ({
   playbackId,
@@ -21,11 +22,29 @@ const CraftCard = ({
   const [tapPosition, setTapPosition] = useState({ x: 0, y: 0 });
   const [showHeart, setShowHeart] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
-  const [likeCount, setLikeCount] = useState(345);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const overlayId = `overlay-${title}-${uniqueId}`;
   const placeholderId = `placeholder-${title}-${uniqueId}`;
   const layoutId = `heart-layout-${title}-${uniqueId}`;
+
+  // Fetch initial like count on component mount
+  useEffect(() => {
+    const loadLikes = async () => {
+      try {
+        const likes = await craftLikesManager.getLikes(supabaseId);
+        setLikeCount(likes || 0);
+      } catch (error) {
+        console.error("Error loading likes:", error);
+        setLikeCount(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadLikes();
+  }, [supabaseId]);
 
   useDoubleTap(doubleTapAreaRef as React.RefObject<HTMLElement>, (position) => {
     setShowHeart(false);
@@ -34,7 +53,15 @@ const CraftCard = ({
     setTimeout(() => {
       setTapPosition(position);
       setShowHeart(true);
-      setLikeCount((prev) => prev + 1);
+
+      // Update like count locally and in database
+      const newLikeCount = likeCount + 1;
+      setLikeCount(newLikeCount);
+
+      // Update in Supabase
+      craftLikesManager
+        .handleLikeInteraction(supabaseId, newLikeCount)
+        .catch(console.error);
 
       setTimeout(() => {
         setShowPlaceholder(true);
@@ -115,7 +142,7 @@ const CraftCard = ({
                 </motion.div>
               )}
             </div>
-            <div>{likeCount}</div>
+            <div>{isLoading ? "..." : likeCount}</div>
           </button>
         </div>
       </div>
