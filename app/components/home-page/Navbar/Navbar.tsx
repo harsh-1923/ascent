@@ -10,6 +10,10 @@ const navItems = [
     label: "Craft",
     href: "/craft",
   },
+  // {
+  //   label: "Writings",
+  //   href: "/writings",
+  // },
 ];
 
 const Navbar = () => {

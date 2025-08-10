@@ -91,12 +91,11 @@ const Socials = () => {
   return (
     <ul className="space-y-1">
       {socials.map((social) => (
-        <li className="dark:hover:bg-[var(--colors-gray2)] hover:bg-[var(--colors-gray3)] pl-1 rounded-lg">
-          <Link
-            key={social.label}
-            href={social.href}
-            className="flex gap-2 items-center p-2"
-          >
+        <li
+          key={social.label}
+          className="dark:hover:bg-[var(--colors-gray2)] hover:bg-[var(--colors-gray3)] pl-1 rounded-lg"
+        >
+          <Link href={social.href} className="flex gap-2 items-center p-2">
             {social.icon} {social.label}
           </Link>
         </li>
