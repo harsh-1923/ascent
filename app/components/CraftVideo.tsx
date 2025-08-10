@@ -64,11 +64,13 @@ const CraftVideo = ({
             video_title: title || "Video",
             player_name: "Lazy Mux Player",
           }}
-          style={{
-            width: "100%",
-            height: "100%",
-            "--controls": "none",
-          }}
+          style={
+            {
+              width: "100%",
+              height: "100%",
+              ["--controls" as string]: "none",
+            } as React.CSSProperties
+          }
           className="rounded-lg overflow-clip"
           autoPlay="muted"
           loop
