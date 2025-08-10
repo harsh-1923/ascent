@@ -1,0 +1,37 @@
+.banner-left {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #505050 0,
+    #505050 1px,
+    transparent 0,
+    transparent 50%
+  );
+  background-size: 32px 32px;
+  background-color: #1e1e1e00;
+}
+
+.banner-right {
+  background-image: repeating-linear-gradient(
+    135deg,
+    #505050 0,
+    #505050 1px,
+    transparent 0,
+    transparent 50%
+  );
+  background-size: 32px 32px;
+  background-color: #1e1e1e00;
+}
+
+.line {
+  animation: growHeight 0.8s ease-in-out forwards;
+  height: 0; /* Start from height 0 */
+}
+
+@keyframes growHeight {
+  from {
+    height: 0;
+  }
+  to {
+    height: 100%; /* Final height set dynamically via inline style */
+  }
+}

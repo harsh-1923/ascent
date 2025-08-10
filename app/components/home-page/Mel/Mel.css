@@ -1,0 +1,35 @@
+#Right_Diagonal > line {
+  stroke: var(--colors-gray6);
+}
+
+#Left_Diagonal > line {
+  stroke: var(--colors-gray8);
+}
+
+@media (prefers-color-scheme: dark) {
+  #Right_Diagonal > line {
+    stroke: #222222;
+  }
+
+  #Left_Diagonal > line {
+    stroke: #303030;
+  }
+}
+
+#Left_Diagonal > line,
+#Right_Diagonal > line {
+  stroke-opacity: 0;
+  animation: fadeIn 1s ease-in-out forwards;
+  animation-delay: calc(calc(var(--banner-line-delay) - 82) * 0.02s);
+}
+
+/* #Left_Diagonal > line:hover,
+#Right_Diagonal > line:hover {
+  opacity: 0;
+} */
+
+@keyframes fadeIn {
+  to {
+    stroke-opacity: 1;
+  }
+}
