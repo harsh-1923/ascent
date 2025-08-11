@@ -4,6 +4,7 @@ import CraftVideo from "../components/CraftVideo";
 import CraftCard from "../components/CraftCard";
 import { Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Metadata } from "next";
 
 interface CraftType {
   supabaseId: string;
@@ -27,6 +28,11 @@ const CRAFTS: CraftType[] = [
     playbackId: "9Fv1MJVBFvGf7TpPEqi4MLhQk1F4qaRgYBBB9pzZw88",
     title: "Tabs",
   },
+  {
+    supabaseId: "chat-input-gpt",
+    playbackId: "mZFjlI5rsikbmphS01cXXsI29HJ86tQNU3GfmZA9577M",
+    title: "Chat Input",
+  },
 ];
 
 const page = () => {
@@ -38,7 +44,7 @@ const page = () => {
 
   return (
     <main className="w-screen pb-40">
-      <div className="flex items-center justify-between w-full max-w-3xl mx-auto px-4 gap-3">
+      <div className="flex items-center justify-between w-full max-w-2xl mx-auto px-4 gap-3">
         <button
           aria-label="Back"
           onClick={handleBackClick}
@@ -47,7 +53,7 @@ const page = () => {
           <Undo2 size={16} className="text-[var(--colors-gray11)]" />
         </button>
       </div>
-      <div className="w-full flex flex-col items-start max-w-3xl mx-auto px-4 space-y-25 py-8">
+      <div className="w-full flex flex-col items-start max-w-2xl mx-auto px-4 space-y-25 py-8">
         {CRAFTS.map((craft) => (
           <CraftCard key={craft.playbackId} {...craft} />
         ))}

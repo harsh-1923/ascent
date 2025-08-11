@@ -26,6 +26,7 @@ const CraftCard = ({
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLocallyLiked, setIsLocallyLiked] = useState(false);
   const isAnimatingRef = useRef(false);
 
   const overlayId = `overlay-${title}-${uniqueId}`;
@@ -35,6 +36,23 @@ const CraftCard = ({
   useEffect(() => {
     isAnimatingRef.current = isAnimating;
   }, [isAnimating]);
+
+  // Check local storage on component mount
+  useEffect(() => {
+    const checkLocalStorage = () => {
+      try {
+        const likedCrafts = JSON.parse(
+          localStorage.getItem("likedCrafts") || "{}"
+        );
+        setIsLocallyLiked(!!likedCrafts[supabaseId]);
+      } catch (error) {
+        console.error("Error reading from localStorage:", error);
+        setIsLocallyLiked(false);
+      }
+    };
+
+    checkLocalStorage();
+  }, [supabaseId]);
 
   // Fetch initial like count and set up real-time subscription
   useEffect(() => {
@@ -107,13 +125,30 @@ const CraftCard = ({
         setTapPosition(position);
         setShowHeart(true);
 
+        // Force cursor refresh
+        if (doubleTapAreaRef.current) {
+          doubleTapAreaRef.current.style.cursor = "default";
+        }
+
         // Show placeholder after animation completes
         setTimeout(() => {
           setShowPlaceholder(true);
           setShowHeart(false);
 
-          // Reset animation state after animation completes
+          // Update local storage after animation completes
           setTimeout(() => {
+            try {
+              const likedCrafts = JSON.parse(
+                localStorage.getItem("likedCrafts") || "{}"
+              );
+              likedCrafts[supabaseId] = true;
+              localStorage.setItem("likedCrafts", JSON.stringify(likedCrafts));
+              setIsLocallyLiked(true);
+            } catch (error) {
+              console.error("Error updating localStorage:", error);
+            }
+
+            // Reset animation state after local storage update
             setIsAnimating(false);
           }, 100);
         }, AWAIT_TIME);
@@ -123,14 +158,14 @@ const CraftCard = ({
 
   return (
     <div className="w-full h-full space-y-2">
-      <div className="relative" ref={doubleTapAreaRef}>
+      <div className="relative cursor-default" ref={doubleTapAreaRef}>
         <CraftVideo {...{ playbackId, title }} />
         {showHeart && (
           <motion.div
             key={`heart-overlay-${uniqueId}`}
             id={overlayId}
             layoutId={layoutId}
-            className="absolute flex items-center justify-center pointer-events-none"
+            className="absolute flex items-center justify-center pointer-events-none z-10"
             initial={{ scale: 1 }}
             animate={{
               scale: 1.5,
@@ -140,6 +175,8 @@ const CraftCard = ({
             style={{
               left: tapPosition.x - 20,
               top: tapPosition.y - 20,
+              pointerEvents: "none",
+              cursor: "default",
             }}
             transition={{
               type: "spring",
@@ -180,7 +217,13 @@ const CraftCard = ({
           <button className="flex items-center gap-1 text-base">
             <div className="relative size-5">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Heart className="size-5" />
+                <Heart
+                  className="size-4"
+                  fill={isLocallyLiked ? "url(#heart-gradient)" : "transparent"}
+                  stroke={
+                    isLocallyLiked ? "url(#heart-gradient)" : "currentColor"
+                  }
+                />
               </div>
               {showPlaceholder && (
                 <motion.div
@@ -189,11 +232,15 @@ const CraftCard = ({
                   layoutId={layoutId}
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 >
-                  <Heart className="size-5 text-red-500" fill="currentColor" />
+                  <Heart
+                    className="size-4"
+                    stroke="url(#heart-gradient)"
+                    fill="url(#heart-gradient)"
+                  />
                 </motion.div>
               )}
             </div>
-            <div>{isLoading ? "..." : likeCount}</div>
+            <div>{isLoading ? "" : likeCount}</div>
           </button>
         </div>
       </div>

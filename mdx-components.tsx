@@ -2,6 +2,7 @@ import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import { highlight } from "sugar-high";
 import { ComponentPropsWithoutRef } from "react";
+import GlyphInspector from "@/app/components/demos/GlyphInspector";
 
 type HeadingProps = ComponentPropsWithoutRef<"h1">;
 type ParagraphProps = ComponentPropsWithoutRef<"p">;
@@ -107,4 +108,5 @@ export const components: MDXComponents = {
       {...props}
     />
   ),
+  GlyphInspector: GlyphInspector,
 };
