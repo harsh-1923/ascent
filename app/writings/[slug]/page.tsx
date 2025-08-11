@@ -31,6 +31,12 @@ export async function generateMetadata({
     };
   }
 
+  const ogImageUrl = `${
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  }/api/og?title=${encodeURIComponent(
+    writing.title
+  )}&name=Harsh Sharma&role=Design Engineer`;
+
   return {
     title: `${writing.title} | Writings | Ascent`,
     description: writing.description,
@@ -39,6 +45,20 @@ export async function generateMetadata({
       description: writing.description,
       type: "article",
       publishedTime: writing.date,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${writing.title} - Harsh Sharma`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: writing.title,
+      description: writing.description,
+      images: [ogImageUrl],
     },
   };
 }

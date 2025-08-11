@@ -35,7 +35,14 @@ export const metadata: Metadata = {
     description: "Design Engineer",
     url: "https://iharshsharma.com",
     siteName: "Harsh Sharma",
-    // images: [{ url: "https://iharshsharma.com/og.png" }], // TODO: Add an OG Image
+    images: [
+      {
+        url: "https://iharshsharma.com/api/og?title=Harsh Sharma&name=Harsh Sharma&role=Design Engineer",
+        width: 1200,
+        height: 630,
+        alt: "Harsh Sharma - Design Engineer",
+      },
+    ],
   },
 };
 
