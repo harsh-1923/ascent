@@ -34,7 +34,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${craft.title} | Craft | Ascent`,
+    title: `${craft.title}`,
     description: craft.description,
     openGraph: {
       title: craft.title,
