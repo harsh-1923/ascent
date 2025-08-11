@@ -56,6 +56,7 @@ const CraftVideo = ({
           ? { aspectRatio: `${aspectRatio}`, width: "100%" }
           : { width: "100%" }
       }
+      className="rounded-lg overflow-clip"
     >
       {shouldLoad ? (
         <MuxPlayer

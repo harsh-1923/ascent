@@ -122,7 +122,7 @@ const CraftCard = ({
   );
 
   return (
-    <div className="w-full h-full space-y-4">
+    <div className="w-full h-full space-y-2">
       <div className="relative" ref={doubleTapAreaRef}>
         <CraftVideo {...{ playbackId, title }} />
         {showHeart && (
@@ -174,7 +174,7 @@ const CraftCard = ({
           </defs>
         </svg>
       </div>
-      <div className="space-y-1">
+      <div className="">
         <h2 className="text-base font-medium select-none">{title}</h2>
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1 text-base">
