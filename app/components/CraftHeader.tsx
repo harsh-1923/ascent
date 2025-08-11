@@ -78,11 +78,7 @@ const CraftLinkButton = () => {
             exit={{ opacity: 0, scale: 0.5, filter: "blur(4px)" }}
             transition={{ duration: 0.1 }}
           >
-            <Check
-              size={14}
-              className="text-[var(--colors-teal11)]"
-              strokeWidth={3}
-            />
+            <Check size={14} className="pt-0.5" strokeWidth={3} />
           </motion.div>
         ) : (
           <motion.div

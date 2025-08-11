@@ -6,6 +6,7 @@ import { getCraft, getCraftSlugs } from "../utils/getCrafts";
 import type { Metadata } from "next";
 import CraftHeader from "@/app/components/CraftHeader";
 import { components } from "@/mdx-components";
+import CraftFooter from "@/app/components/CraftFooter";
 
 interface CraftPageProps {
   params: Promise<{
@@ -59,6 +60,7 @@ export default async function CraftPage({ params }: CraftPageProps) {
       <article className="w-full max-w-[80ch] mx-auto">
         <MDXRemote source={craft.content || ""} components={components} />
       </article>
+      <CraftFooter />
     </main>
   );
 }
