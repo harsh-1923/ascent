@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { CRAFTS } from "../craft/page";
+import { CRAFTS } from "../craft/utils/craftsData";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
