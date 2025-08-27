@@ -4,7 +4,6 @@ import CraftVideo from "../components/CraftVideo";
 import CraftCard from "../components/CraftCard";
 import { Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Metadata } from "next";
 import { CRAFTS } from "./utils/craftsData";
 
 const page = () => {

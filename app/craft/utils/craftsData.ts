@@ -13,6 +13,12 @@ export const CRAFTS: CraftType[] = [
     title: "Glyph Inspector",
   },
   {
+    supabaseId: "heat-map",
+    link: "/craft/heat-map",
+    playbackId: "MtHKc3bkZ00pIWXHYJXb6uOCFf00NkSPjPIjjKqqnVEUA",
+    title: "Heat Map",
+  },
+  {
     supabaseId: "focus-accordion",
     link: "/craft/focus-accordion",
     playbackId: "7iGDHA1X8lCUQnbQmV2iJXqHcxBattZAgUqqHVHMyMc",
