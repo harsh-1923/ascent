@@ -1,5 +1,4 @@
 import { toast } from "sonner";
-import { supabase } from "./supabase";
 
 export const updateCraftLikes = async (
   id: string,
@@ -7,15 +6,22 @@ export const updateCraftLikes = async (
   currentLikes: number
 ) => {
   try {
-    const { error } = await supabase
-      .from("craft_likes")
-      .update({ like_count: currentLikes + increment })
-      .eq("craft_id", id);
+    const response = await fetch(`/api/craft/${id}/like`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ increment, currentLikes }),
+    });
 
-    if (error) {
-      toast.error("Error updating likes");
+    if (!response.ok) {
+      throw new Error('Failed to update likes');
     }
+
+    const data = await response.json();
+    return data.new_count;
   } catch (error) {
+    console.error("Error updating likes:", error);
     toast.error("Error updating likes");
   }
 };
