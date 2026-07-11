@@ -96,26 +96,57 @@ const CraftCard = ({
     };
   }, [supabaseId]);
 
+  // Mark this craft as liked in local storage.
+  const markLikedInStorage = useCallback(() => {
+    try {
+      const likedCrafts = JSON.parse(localStorage.getItem("likedCrafts") || "{}");
+      likedCrafts[supabaseId] = true;
+      localStorage.setItem("likedCrafts", JSON.stringify(likedCrafts));
+      setIsLocallyLiked(true);
+    } catch (error) {
+      console.error("Error updating localStorage:", error);
+    }
+  }, [supabaseId]);
+
+  // Core like: optimistic bump + atomic DB increment, reconciled to the
+  // authoritative count. Returns whether the write succeeded.
+  const commitLike = useCallback(async (): Promise<boolean> => {
+    // Functional update so rapid taps don't collide on a stale value.
+    setLikeCount((count) => count + 1);
+    try {
+      const newCount = await craftLikesManager.handleLikeInteraction(supabaseId);
+      if (typeof newCount === "number") {
+        setLikeCount(newCount);
+      }
+      return true;
+    } catch (error) {
+      // Roll back the optimistic bump on error.
+      setLikeCount((count) => Math.max(0, count - 1));
+      return false;
+    }
+  }, [supabaseId]);
+
+  // Like triggered from the heart button (no flying-heart animation).
+  const handleLikeButtonClick = useCallback(async () => {
+    // Suppress realtime updates while the optimistic write settles.
+    setIsAnimating(true);
+    const ok = await commitLike();
+    if (!ok) {
+      setIsAnimating(false);
+      return;
+    }
+    markLikedInStorage();
+    setTimeout(() => setIsAnimating(false), AWAIT_TIME);
+  }, [commitLike, markLikedInStorage]);
+
   const handleDoubleTap = useCallback(
     async (position: { x: number; y: number }) => {
       // Set animation state to prevent real-time updates
       setIsAnimating(true);
 
-      // Optimistically bump the count using a functional update so rapid
-      // taps don't collide on a stale value.
-      setLikeCount((count) => count + 1);
-
       // Atomically increment in the DB; sync to the authoritative count.
-      try {
-        const newCount = await craftLikesManager.handleLikeInteraction(
-          supabaseId
-        );
-        if (typeof newCount === "number") {
-          setLikeCount(newCount);
-        }
-      } catch (error) {
-        // Roll back the optimistic bump and reset animation state on error
-        setLikeCount((count) => Math.max(0, count - 1));
+      const ok = await commitLike();
+      if (!ok) {
         setIsAnimating(false);
         return;
       }
@@ -141,16 +172,7 @@ const CraftCard = ({
 
           // Update local storage after animation completes
           setTimeout(() => {
-            try {
-              const likedCrafts = JSON.parse(
-                localStorage.getItem("likedCrafts") || "{}"
-              );
-              likedCrafts[supabaseId] = true;
-              localStorage.setItem("likedCrafts", JSON.stringify(likedCrafts));
-              setIsLocallyLiked(true);
-            } catch (error) {
-              console.error("Error updating localStorage:", error);
-            }
+            markLikedInStorage();
 
             // Reset animation state after local storage update
             setIsAnimating(false);
@@ -158,7 +180,7 @@ const CraftCard = ({
         }, AWAIT_TIME);
       }, 100);
     },
-    [supabaseId]
+    [commitLike, markLikedInStorage]
   );
 
   useDoubleTap(doubleTapAreaRef as React.RefObject<HTMLElement>, handleDoubleTap);
@@ -221,7 +243,11 @@ const CraftCard = ({
       <div className="">
         <h2 className="text-base font-medium select-none">{title}</h2>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1 text-base">
+          <button
+            type="button"
+            onClick={handleLikeButtonClick}
+            className="flex items-center gap-1 text-base"
+          >
             <div className="relative size-5">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <Heart
