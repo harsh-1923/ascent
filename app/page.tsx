@@ -27,7 +27,11 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mt-8">
           <div className="w-full sm:w-[70%] space-y-4">
             <p className="">
-              Currently, building Design Systems and DX tools at Juspay.
+              Currently, building Design Systems at Juspay and{" "}
+              <Link href="https://xynehq.com/" target="_blank" className="underline">
+                xynehq.com
+              </Link>
+              .
             </p>
             <p className="max-w-[600px]">
               Also, experimenting with user experience, interaction design and

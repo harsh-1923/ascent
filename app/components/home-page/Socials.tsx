@@ -67,7 +67,7 @@ const GitHubLogoIcon = () => {
 const socials = [
   {
     label: "X",
-    href: "https://x.com/mai_sharmaji",
+    href: "https://x.com/imharshin",
     icon: <TwitterXIcon />,
   },
   {
