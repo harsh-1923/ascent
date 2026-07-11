@@ -42,30 +42,26 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { increment = 1, currentLikes } = await request.json();
+    const { increment = 1 } = await request.json();
 
     // Basic validation
-    if (typeof increment !== 'number' || typeof currentLikes !== 'number') {
+    if (typeof increment !== 'number') {
       return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
     }
 
-    // Simple rate limiting: check if this IP has liked this craft recently
-    const clientIp = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
-    
-    // For now, we'll implement a basic update
-    const { error } = await supabase
-      .from("craft_likes")
-      .update({ like_count: currentLikes + increment })
-      .eq("craft_id", id);
+    // Atomic increment in the DB (like_count = like_count + increment) so that
+    // rapid / concurrent likes can't overwrite each other.
+    const { data, error } = await supabase.rpc("increment_craft_like", {
+      p_craft_id: id,
+      p_increment: increment,
+    });
 
     if (error) {
       console.error("Error updating likes:", error);
       return NextResponse.json({ error: "Failed to update likes" }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, new_count: currentLikes + increment });
+    return NextResponse.json({ success: true, new_count: data });
   } catch (error) {
     console.error("Error updating likes:", error);
     return NextResponse.json({ error: "Failed to update likes" }, { status: 500 });

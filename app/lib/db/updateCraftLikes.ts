@@ -1,17 +1,13 @@
 import { toast } from "sonner";
 
-export const updateCraftLikes = async (
-  id: string,
-  increment: number = 1,
-  currentLikes: number
-) => {
+export const updateCraftLikes = async (id: string, increment: number = 1) => {
   try {
     const response = await fetch(`/api/craft/${id}/like`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ increment, currentLikes }),
+      body: JSON.stringify({ increment }),
     });
 
     if (!response.ok) {

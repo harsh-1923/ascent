@@ -3,8 +3,8 @@ import { updateCraftLikes } from "./updateCraftLikes";
 
 export interface CraftLikesManager {
   getLikes: (id: string) => Promise<number>;
-  incrementLikes: (id: string, currentLikes: number) => Promise<void>;
-  handleLikeInteraction: (id: string, currentLikes: number) => Promise<number>;
+  incrementLikes: (id: string) => Promise<void>;
+  handleLikeInteraction: (id: string) => Promise<number>;
 }
 
 export const craftLikesManager: CraftLikesManager = {
@@ -24,9 +24,9 @@ export const craftLikesManager: CraftLikesManager = {
   /**
    * Increment likes by 1 for a craft
    */
-  incrementLikes: async (id: string, currentLikes: number): Promise<void> => {
+  incrementLikes: async (id: string): Promise<void> => {
     try {
-      await updateCraftLikes(id, 1, currentLikes);
+      await updateCraftLikes(id, 1);
     } catch (error) {
       console.error("Error updating likes:", error);
       throw error;
@@ -34,14 +34,9 @@ export const craftLikesManager: CraftLikesManager = {
   },
 
   /**
-   * Handle a complete like interaction - update with new count
+   * Handle a complete like interaction - returns the authoritative new count
    */
-  handleLikeInteraction: async (
-    id: string,
-    currentLikes: number
-  ): Promise<number> => {
-    const newLikeCount = currentLikes + 1;
-    await updateCraftLikes(id, 1, currentLikes);
-    return newLikeCount;
+  handleLikeInteraction: async (id: string): Promise<number> => {
+    return await updateCraftLikes(id, 1);
   },
 };

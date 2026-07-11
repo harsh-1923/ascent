@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId, useRef, useState, useEffect } from "react";
+import React, { useId, useRef, useState, useEffect, useCallback } from "react";
 import CraftVideo from "./CraftVideo";
 import { useDoubleTap } from "../lib/utils/useDoubleTap";
 import { motion } from "motion/react";
@@ -96,22 +96,26 @@ const CraftCard = ({
     };
   }, [supabaseId]);
 
-  useDoubleTap(
-    doubleTapAreaRef as React.RefObject<HTMLElement>,
-    async (position) => {
+  const handleDoubleTap = useCallback(
+    async (position: { x: number; y: number }) => {
       // Set animation state to prevent real-time updates
       setIsAnimating(true);
 
-      // First, update the like count in the database
-      try {
-        const newLikeCount = likeCount + 1;
-        // Pass CURRENT likeCount to the updater so DB becomes current + 1 (not +2)
-        await craftLikesManager.handleLikeInteraction(supabaseId, likeCount);
+      // Optimistically bump the count using a functional update so rapid
+      // taps don't collide on a stale value.
+      setLikeCount((count) => count + 1);
 
-        // Update local state optimistically
-        setLikeCount(newLikeCount);
+      // Atomically increment in the DB; sync to the authoritative count.
+      try {
+        const newCount = await craftLikesManager.handleLikeInteraction(
+          supabaseId
+        );
+        if (typeof newCount === "number") {
+          setLikeCount(newCount);
+        }
       } catch (error) {
-        // Reset animation state on error
+        // Roll back the optimistic bump and reset animation state on error
+        setLikeCount((count) => Math.max(0, count - 1));
         setIsAnimating(false);
         return;
       }
@@ -153,8 +157,11 @@ const CraftCard = ({
           }, 100);
         }, AWAIT_TIME);
       }, 100);
-    }
+    },
+    [supabaseId]
   );
+
+  useDoubleTap(doubleTapAreaRef as React.RefObject<HTMLElement>, handleDoubleTap);
 
   return (
     <div className="w-full h-full space-y-2">
