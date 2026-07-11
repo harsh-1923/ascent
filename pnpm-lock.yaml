@@ -18,8 +18,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@next/mdx':
-        specifier: ^15.3.5
-        version: 15.4.6(@mdx-js/loader@3.1.0(acorn@8.15.0))(@mdx-js/react@3.1.0(@types/react@19.1.9)(react@19.1.0))
+        specifier: ^15.5.20
+        version: 15.5.20(@mdx-js/loader@3.1.0(acorn@8.15.0))(@mdx-js/react@3.1.0(@types/react@19.1.9)(react@19.1.0))
       '@number-flow/react':
         specifier: ^0.5.10
         version: 0.5.10(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -310,8 +310,8 @@ packages:
   '@next/env@15.5.20':
     resolution: {integrity: sha512-dXh51Wvddf8daEyBXryZZEe1FdVxEWx9lgaTseLZUtC1XP/W8Wri+Z+VPOElHlByk23CyqHdc2oVByX7wsTWsw==}
 
-  '@next/mdx@15.4.6':
-    resolution: {integrity: sha512-PpJcNWNDq3WctJI2LY7Jur6qTdWklZ3BmbBlS9zG9MvmphcU91MoF/udPmRS1huRSVibGGteXMELu8MXYxjU9g==}
+  '@next/mdx@15.5.20':
+    resolution: {integrity: sha512-gGaOFZ91wp16qJB23zNhN9rdHEjOGBMlwC5d/qnbpiC35f+d0/K0FmwiG3P20N9e5iCj3K6ZQAuhSWb5is5BzQ==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
@@ -1890,7 +1890,7 @@ snapshots:
 
   '@next/env@15.5.20': {}
 
-  '@next/mdx@15.4.6(@mdx-js/loader@3.1.0(acorn@8.15.0))(@mdx-js/react@3.1.0(@types/react@19.1.9)(react@19.1.0))':
+  '@next/mdx@15.5.20(@mdx-js/loader@3.1.0(acorn@8.15.0))(@mdx-js/react@3.1.0(@types/react@19.1.9)(react@19.1.0))':
     dependencies:
       source-map: 0.7.6
     optionalDependencies:
